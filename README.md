@@ -56,6 +56,22 @@ This fork includes several technical improvements over the original:
 - Enhanced error logging
 - More secure shutdown procedures
 
+### DNS Resolution Performance Improvements
+- **DNS Caching:**  
+  Implemented an in-memory cache for resolved hostnames with a 5-minute expiration time, significantly reducing repetitive DNS lookups.
+  
+- **Parallel Endpoint Resolution:**  
+  Peer endpoints are now resolved in parallel using goroutines, dramatically improving connection setup time when multiple peers are configured.
+  
+- **Exponential Backoff:**  
+  DNS retry mechanism now uses exponential backoff instead of fixed intervals, improving responsiveness while reducing unnecessary network traffic.
+  
+- **Timeout Handling:**  
+  Added a 10-second timeout for DNS operations to prevent hanging on unresponsive DNS servers, with graceful fallback to retries.
+  
+- **Reduced Maximum Retries:**  
+  Optimized the maximum number of retries from 10/30 to 5/10 (normal/boot mode), reducing connection setup time while maintaining reliability.
+
 ### UI/Tray Optimization (Performance Improvements)
 - **Reduced Redundant Processing:**  
   The tray component now caches frequently used UI elements such as menu action arrays to reduce repeated method calls.
@@ -253,28 +269,59 @@ The following improvements have been implemented in the `TunnelsPage` component 
 - **Command Handler Refactoring:**  
   The command handler map in `main` has been updated to improve clarity and error handling for various command-line options.
 
-  ## License
+  ## Parser Improvements
 
-This repository is MIT-licensed.
+### Overview
+The parser in `parser.go` has been optimized for improved performance and readability. The following changes have been implemented:
 
-```text
-Copyright (C) 2018-2022 WireGuard LLC. All Rights Reserved.
+- **Case-Insensitive Comparisons Without Allocations:**  
+  Instead of converting strings to lower case for each comparison, the parser now uses `strings.EqualFold` for case-insensitive comparisons. This change eliminates unnecessary string allocations, leading to less memory usage and improved performance.
 
-Permission is hereby granted, free of charge, to any person obtaining a
-copy of this software and associated documentation files (the "Software"),
-to deal in the Software without restriction, including without limitation
-the rights to use, copy, modify, merge, publish, distribute, sublicense,
-and/or sell copies of the Software, and to permit persons to whom the
-Software is furnished to do so, subject to the following conditions:
+- **Streamlined Parsing Logic:**  
+  The parsing code has been refactored for clarity while preserving its core functionality. Error messages and validations have been standardized to maintain consistency across different parsing steps.
 
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
+- **Minor Validation and Error Handling Enhancements:**  
+  Adjustments have been made in helper functions (e.g., `parseIPCidr`, `parseEndpoint`, etc.) to handle edge cases and ensure robust error handling. These changes improve the stability of the parser when processing various configuration file formats.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-DEALINGS IN THE SOFTWARE.
-```
+These enhancements contribute to a more efficient and maintainable configuration parser.
+
+## UI Process Performance Optimizations
+
+The `uiprocess.go` module has been optimized for better performance and resource management:
+
+### Memory Optimizations
+- **Pre-allocated Handles:**  
+  Handles slice is now pre-allocated to avoid runtime reallocation, reducing memory fragmentation.
+  
+- **Efficient Resource Management:**  
+  Improved cleanup of system resources with proper handle management and finalizer implementation.
+  
+- **Optimized String Handling:**  
+  More efficient UTF16 string conversions with better error handling.
+
+### Process Management Improvements
+- **Enhanced Process Creation:**  
+  Optimized process creation flags and improved environment block handling.
+  
+- **Better Handle Management:**  
+  Immediate cleanup of unused thread handles and improved process handle validation.
+  
+- **Robust Error Handling:**  
+  Added early validation of process handles and more specific error messages.
+
+### Code Structure and Performance
+- **Improved Code Organization:**  
+  Better structured code with clear section separation for improved maintainability.
+  
+- **Optimized Resource Cleanup:**  
+  More efficient cleanup of system resources with proper defer statements.
+  
+- **Enhanced Error Propagation:**  
+  Better error handling structure with more specific error messages and proper context.
+
+These optimizations result in:
+- Reduced memory allocations and fragmentation
+- More efficient process creation and management
+- Better resource cleanup and system stability
+- Improved error handling and recovery
+- Enhanced overall performance
