@@ -5,12 +5,6 @@
 This is a fork of the official WireGuard Windows client. The original project can be found at:
 https://git.zx2c4.com/wireguard-windows
 
-## Copyright Notice
-
-Copyright (C) 2019-2022 WireGuard LLC. All Rights Reserved.
-
-This software is licensed under the MIT License. See the LICENSE file for details.
-
 ## Overview
 
 WireGuard is a modern, fast, and secure VPN tunnel that aims to be faster, simpler, leaner, and more useful than IPsec, while avoiding the massive headache. It intends to be considerably more performant than OpenVPN.
